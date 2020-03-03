@@ -1,6 +1,6 @@
-import random
-
 # Gennadii Sytov - CS485 - Winter2020 - Project 2
+
+import random
 
 class KeyGenerator:
 
@@ -8,7 +8,7 @@ class KeyGenerator:
     constant_33bit = pow(2, 33) - 1
     constant_32bit = pow(2, 32)
 
-    def __init__(self, publicKeyFileName = "pubkey.txt", privateKeyFileName = "prikey.txt", seed = None):
+    def __init__(self, seed = None, publicKeyFileName = "pubkey.txt", privateKeyFileName = "prikey.txt"):
         self.publicKeyFileName = publicKeyFileName
         self.privateKeyFileName = privateKeyFileName
         self.random = random
