@@ -1,9 +1,8 @@
 # Gennadii Sytov - CS485 - Winter2020 - Project 2
 
-# import psu_crypt
-# import key_generator as KG
 import sys
-
+import key_generator as KG
+import PSUCrypt
 
 def stringToHex(str):
     s_hex = []
@@ -15,21 +14,14 @@ def stringToHex(str):
         h_str += format(h, "02x")
     return h_str
 
-def getKeyFromFile(key_file):
+
+def getKeyFromFile(file_name):
     try:
-        file = open(key_file, 'r')
+        file = open(file_name, 'r')
     except IOError:
-        print("Error: Can't open the \"" + key_file + "\" file.")
+        print("Error: Can't open the \"" + file_name + "\" file.")
     with file:
         key = file.readline()
-        try:
-            key = int(key, 16)
-            key = format(key, "016x")
-            if(len(key) > 16):
-                key = key[:16]
-        except ValueError:
-            print("Error: Can't parse the key")
-        
         return key
 
 def getSrcFromFile(src_file, mode):
@@ -56,10 +48,30 @@ def getSrcFromFile(src_file, mode):
 
         if i < 0:
             raise ValueError("Error: the source file is empty!")
-        hex_strings[i] = format(int(hex_strings[i], 16), "016x")
+        hex_strings[i] = format(int(hex_strings[i], 16), "08x")
         return hex_strings
+    
+def getCipherTextFromFile(src_file):
+    try:
+        file = open(src_file, 'r')
+    except IOError:
+        print("Error: Can't open the \"" + src_file + "\" file.")
+    with file:
+        cipher_text = []
+        i = -1
+        while True:
+            l = file.readline()
+            if not l:
+                break
+            cipher_text.append(l)
+            i += 1
 
-def saveResultsToFile(dest_file, results, mode):
+        if i < 0:
+            raise ValueError("Error: the cipher text file is empty!")
+        return cipher_text
+
+
+def saveResultsToFile(dest_file, results, option):
     try:
         file = open(dest_file, 'w')
     except IOError:
@@ -68,8 +80,8 @@ def saveResultsToFile(dest_file, results, mode):
         counter = 0
         char_tup = ""
         for r in results:
-            if mode == "-e":
-                file.write(r)
+            if option == "-e":
+                file.write(str(r[0]) + " " + str(r[1]) + "\n")
             else:
                 for c in r:
                     char_tup += c
@@ -85,7 +97,7 @@ def saveResultsToFile(dest_file, results, mode):
 
 def main():
     argv = sys.argv[1:]
-    if len(argv) < 4:
+    if len(argv) < 1:
         print("Missing command line arguments!")
         return
     elif len(argv) > 4:
@@ -93,35 +105,57 @@ def main():
         return
 
     option = argv[0]
+    seed = None
+    if option == "-k":
+        if len(argv) > 1:
+            seed = int(argv[1])
+        KG.KeyGenerator(seed)
+        print("You have successfully generated the keys. The keys have been saved to the pubkey.txt and prikey.txt files.")
+        return
+
+    if len(argv) < 3:
+        print("Missing command line arguments!")
+        return
+
     src_file = argv[1]
     dest_file = argv[2]
 
     if option != "-e" and option != "-d" and option != "-k":
         print("Uknown option. Must be either \'-e\' for encryption, \'-d\' for decryption or \'-k\' for generating keys")
         return
+    
+    if len(argv) == 4:
+        seed = argv[3]
 
-    # key = getKeyFromFile(key_file)
-    # src = getSrcFromFile(src_file, mode)
+    pub_key = getKeyFromFile("pubkey.txt")
+    pri_key = getKeyFromFile("prikey.txt")
 
-    # key_gen = KG.KeyGenerator(key)
-    # cipher = psu_crypt.PSUCrypt(key_gen)
-    # results = []
+    cipher = PSUCrypt.PSUCrypt(pub_key, pri_key, seed)
+    if option == "-e":
+        src = getSrcFromFile(src_file, option)
+    else:
+        src = getCipherTextFromFile(src_file)
 
-    # for s in src:
-    #     if mode == "-e":
-    #         results.append(cipher.encrypt(s))
-    #     else:
-    #         results.append(cipher.decrypt(s))
+    results = []
+    for s in src:
+        if option == "-e":
+            i = int(s, 16)
+            results.append(cipher.encrypt(i))
+        else:
+            print(s)
+            h = format(cipher.decrypt(s), "08x")
+            results.append(h)
+    
+    print(results)
+    saveResultsToFile(dest_file, results, option)
 
-    # print(results)
-    # saveResultsToFile(dest_file, results, mode)
-
-    # process = ""
-    # if option == "-e":
-    #     process = "encryption"
-    # elif option == "-d":
-    #     process = "decryption"
-    # print("The " + process + " has finished successfully. The result has been saved to the \"" + dest_file + "\" file.")
+    process = ""
+    if option == "-e":
+        process = "encryption"
+    elif option == "-d":
+        process = "decryption"
+    print("The " + process + " has finished successfully. The result has been saved to the \"" + dest_file + "\" file.")
+    
 
 
 if __name__ == '__main__':

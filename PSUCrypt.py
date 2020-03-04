@@ -32,13 +32,13 @@ class PSUCrypt:
         return P
 
 
-pubkey = "2 7184637153 11839090163"
-prikey = "8836531810"
-pCrypt = PSUCrypt(pubkey, prikey)
-ptx = int("abcd", 16)
-c = pCrypt.encrypt(ptx)
-c = str(c[0]) + " " + str(c[1])
-print("Ciphertext: " + c)
-result = pCrypt.decrypt(c)
-result = format(result, "04x")
-print("Plaintext: " + result)
+# pubkey = "2 7184637153 11839090163"
+# prikey = "8836531810"
+# pCrypt = PSUCrypt(pubkey, prikey)
+# ptx = int("abcd", 16)
+# c = pCrypt.encrypt(ptx)
+# c = str(c[0]) + " " + str(c[1])
+# print("Ciphertext: " + c)
+# result = pCrypt.decrypt(c)
+# result = format(result, "04x")
+# print("Plaintext: " + result)
