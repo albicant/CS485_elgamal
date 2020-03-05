@@ -92,13 +92,3 @@ class KeyGenerator:
         with file:
             file.write(result)
                
-
-        
-
-
-
-# kg = KeyGenerator()
-# p = kg.generatePPrime()
-# print("Is P = " + str(p) + " a prime?\nMiller-Rabin Primality Test: " + str(kg.primalityTest(p)))
-# testP = p > kg.constant_33bit and p < kg.constant_34bit
-# print("Test valid for P: " + str(testP))

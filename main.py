@@ -142,11 +142,9 @@ def main():
             i = int(s, 16)
             results.append(cipher.encrypt(i))
         else:
-            print(s)
             h = format(cipher.decrypt(s), "08x")
             results.append(h)
     
-    print(results)
     saveResultsToFile(dest_file, results, option)
 
     process = ""
